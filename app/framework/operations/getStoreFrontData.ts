@@ -10,6 +10,14 @@ const storeFrontDataQuery = `
             }
           }
         }
+        pages(first: 10){
+          edges {
+            node {
+              title
+              handle
+            }
+          }
+        }
         shop {
             name
         }
@@ -25,6 +33,14 @@ type StoreFrontDataResponse = {
       };
     }[];
   };
+  pages: {
+    edges: {
+      node: {
+        title: string
+        handle: string
+      }
+    }[]
+  }
   shop: {
     name: string;
   };
@@ -34,8 +50,10 @@ export default async function getStoreFrontData() {
     storeFrontDataQuery
   );
   const collections = data.collections.edges.map(({ node }) => ({ ...node }));
+  const pages = data.pages.edges.map(({ node }) => ({ ...node }));
   return {
     collections,
+    pages,
     shop: data.shop,
   };
 }

@@ -1,5 +1,7 @@
 import fetch from "./lib/fetch";
 import getStoreFrontData from "./operations/getStoreFrontData";
+import getProducts from "./operations/getProducts";
+import getProduct from "./operations/getProduct";
 
 const API_URL = process.env.API_URL;
 const STOREFRONT_API_TOKEN = process.env.STOREFRONT_API_TOKEN;
@@ -15,6 +17,8 @@ const ONE_DAY = 60 * 60 * 24;
 
 const operations = {
   getStoreFrontData,
+  getProducts,
+  getProduct
 };
 
 export const config = {
