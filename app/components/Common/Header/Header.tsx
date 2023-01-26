@@ -1,18 +1,24 @@
 import { useState } from "react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { Dialog, Popover, Tab, Transition } from "@headlessui/react";
+import { Popover } from "@headlessui/react";
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
   ShoppingCartIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import { useMenu } from "~/hooks";
+import { useCart, useCustomer, useMenu } from "~/hooks";
 import { Link } from "@remix-run/react";
+import { Sidecart } from "~/components/Cart";
+import { CustomerPopover } from "~/components/Customer";
 
 export default function Header() {
   const menu = useMenu();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
+  const cart = useCart();
+  const customer = useCustomer();
+  console.log(customer);
   return (
     <header className="relative z-10">
       <nav aria-label="Top">
@@ -275,13 +281,17 @@ export default function Header() {
                       </div>
 
                       <div className="flex">
-                        <a
-                          href="/"
-                          className="-m-2 p-2 text-gray-400 hover:text-gray-500"
-                        >
-                          <span className="sr-only">Account</span>
-                          <UserIcon className="h-6 w-6" aria-hidden="true" />
-                        </a>
+                        {customer ? (
+                          <CustomerPopover />
+                        ) : (
+                          <Link
+                            to="/account/login"
+                            className="-m-2 p-2 text-gray-400 hover:text-gray-500"
+                          >
+                            <span className="sr-only">Account</span>
+                            <UserIcon className="h-6 w-6" aria-hidden="true" />
+                          </Link>
+                        )}
                       </div>
                     </div>
 
@@ -291,13 +301,20 @@ export default function Header() {
                     />
 
                     <div className="flow-root">
-                      <a href="/" className="group -m-2 flex items-center p-2">
+                      <a
+                        href="/"
+                        className="group -m-2 flex items-center p-2"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setCartOpen(true);
+                        }}
+                      >
                         <ShoppingCartIcon
                           className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                           aria-hidden="true"
                         />
                         <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                          0
+                          {cart?.totalQuantity}
                         </span>
                         <span className="sr-only">items in cart, view bag</span>
                       </a>
@@ -309,6 +326,7 @@ export default function Header() {
           </div>
         </div>
       </nav>
+      <Sidecart open={cartOpen} setOpen={setCartOpen} />
     </header>
   );
 }

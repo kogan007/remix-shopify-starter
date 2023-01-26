@@ -130,7 +130,7 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             <fetcher.Form method="post" action="/cart">
-              <input type="hidden" name="id" value={variant.id} />
+              <input type="hidden" name="id" value={variant?.id} />
               <input type="number" name="quantity" defaultValue={1} />
               <div className="flex flex-col">
                 {product.options.map((opt) => (
@@ -150,7 +150,9 @@ export default function ProductView({ product }: { product: Product }) {
                   </select>
                 ))}
               </div>
-              <button>Add to cart</button>
+              <button disabled={!variant?.availableForSale}>
+                {!variant?.availableForSale ? "Out of stock" : "Add to cart"}
+              </button>
             </fetcher.Form>
 
             <section aria-labelledby="details-heading" className="mt-12">

@@ -25,10 +25,16 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-export async function loader(args: LoaderArgs) {
-  const { shop, collections, menu } =
-    await config.operations.getStoreFrontData();
-  return json({ shop, collections, menu });
+export async function loader({ request }: LoaderArgs) {
+  const shopInfoPromise = config.operations.getStoreFrontData();
+  const cartPromise = config.operations.cart.getCart(request);
+  const userPromise = config.operations.auth.getLoggedInUser(request);
+  const [{ shop, collections, menu }, cart, customer] = await Promise.all([
+    shopInfoPromise,
+    cartPromise,
+    userPromise,
+  ]);
+  return json({ shop, collections, menu, cart, customer });
 }
 
 export default function App() {

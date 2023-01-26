@@ -1,1 +1,1 @@
-export default null;
+export { default as Sidecart } from "./Sidecart";

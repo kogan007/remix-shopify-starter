@@ -1,7 +1,6 @@
 import { config } from "~/framework";
 import { getSession } from "~/framework/lib/cartSession";
-import { type Image, type Edge } from "~/framework/types/global";
-import { type ProductShort } from "~/framework/types/product";
+import type { Cart, CartResponse } from "~/framework/types/cart";
 
 const getCartQuery = `
     query(
@@ -10,6 +9,8 @@ const getCartQuery = `
         cart(
             id: $cartId
         ) {
+            totalQuantity
+            checkoutUrl
             lines(first: 250) {
                 edges {
                     node {
@@ -42,36 +43,6 @@ const getCartQuery = `
     }
 `;
 
-type LineItemResponse = {
-  quantity: number;
-  id: string;
-  merchandise: {
-    product: {
-      id: string;
-      title: string;
-      vendor: string;
-      handle: string;
-      images: Edge<Image>;
-    };
-  };
-};
-
-type CartResponse = {
-  cart: {
-    lines: Edge<LineItemResponse>;
-  };
-};
-
-type LineItem = {
-  quantity: number;
-  id: string;
-  product: ProductShort;
-};
-
-type Cart = {
-  items: LineItem[];
-};
-
 async function getShopifyCart(cartId: string): Promise<Cart> {
   const {
     data: { cart },
@@ -82,6 +53,7 @@ async function getShopifyCart(cartId: string): Promise<Cart> {
   });
 
   const formatCart = {
+    ...cart,
     items: cart.lines.edges.map(({ node }) => ({
       ...node,
       product: {

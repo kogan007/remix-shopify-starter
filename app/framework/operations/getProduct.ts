@@ -18,6 +18,7 @@ const getProductQuery = `
               edges {
                 node {
                   id
+                  availableForSale
                   selectedOptions{
                     name
                     value

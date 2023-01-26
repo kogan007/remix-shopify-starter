@@ -3,6 +3,7 @@ import getStoreFrontData from "./operations/getStoreFrontData";
 import getProducts from "./operations/getProducts";
 import getProduct from "./operations/getProduct";
 import cart from "./operations/cart";
+import auth from "./operations/auth";
 import getCollection from "./operations/getCollection";
 
 const API_URL = process.env.API_URL;
@@ -22,6 +23,7 @@ const operations = {
   getProducts,
   getProduct,
   cart,
+  auth,
   getCollection,
 };
 
