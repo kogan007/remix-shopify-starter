@@ -24,11 +24,13 @@ export default async function fetchGraphql<T = {}>(
     const { data, errors, status } = await res.json();
 
     if (errors) {
+      console.log(errors);
       throw new Error(`Shopify graphql error ${status}`);
     }
 
     return { data };
   } catch (e) {
+    console.log(e);
     throw new Error("Unexpected shopify graphql error");
   }
 }

@@ -1,5 +1,5 @@
 import { config } from "..";
-import { Product, ProductResponse } from "../types/product";
+import { type ProductShort, type ProductResponseShort } from "../types/product";
 
 const getProductsQuery = `
     query (
@@ -30,18 +30,21 @@ const getProductsQuery = `
             }
         }
     }
-`
-
+`;
 
 type GetProductArgs = {
-    handle?: string
-    first?: number
-}
-export default async function getProducts(args: GetProductArgs = {}): Promise<Product[]>{
-    const { data } = await config.fetch<ProductResponse>(getProductsQuery, { variables: args })
-    const products = data.products.edges.map(({ node }) => ({
-        ...node,
-        images: node.images.edges.map(({ node }) => ({ ...node}))
-    }))
-    return products
+  handle?: string;
+  first?: number;
+};
+export default async function getProducts(
+  args: GetProductArgs = {}
+): Promise<ProductShort[]> {
+  const { data } = await config.fetch<ProductResponseShort>(getProductsQuery, {
+    variables: args,
+  });
+  const products = data.products.edges.map(({ node }) => ({
+    ...node,
+    images: node.images.edges.map(({ node }) => ({ ...node })),
+  }));
+  return products;
 }

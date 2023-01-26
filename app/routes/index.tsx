@@ -4,13 +4,17 @@ import { Link, useLoaderData } from "@remix-run/react";
 import { config } from "~/framework";
 
 export async function loader(args: LoaderArgs) {
-  const { shop, collections } = await config.operations.getStoreFrontData();
-  const products = await config.operations.getProducts()
+  const shopInfoPromise = config.operations.getStoreFrontData();
+  const productsPromise = config.operations.getProducts();
+  const [{ shop, collections }, products] = await Promise.all([
+    shopInfoPromise,
+    productsPromise,
+  ]);
   return json({ shop, collections, products });
 }
 
 export default function Index() {
-  const {shop, products, collections } = useLoaderData<typeof loader>();
+  const { shop, products, collections } = useLoaderData<typeof loader>();
 
   return (
     <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
@@ -24,12 +28,15 @@ export default function Index() {
       <div>
         Products
         <div className="grid grid-cols-3">
-          {products.map(product => (
+          {products.map((product) => (
             <div key={product.id}>
-              <Link to={`/products/` + product.handle}>
-              {product.title}
-              </Link>
-              <img src={product.images[0].url} width={400} height={400}/>
+              <Link to={`/products/` + product.handle}>{product.title}</Link>
+              <img
+                src={product.images[0].url}
+                width={400}
+                height={400}
+                alt=""
+              />
             </div>
           ))}
         </div>
