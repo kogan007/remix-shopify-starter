@@ -1,4 +1,5 @@
 import { config } from "..";
+import type { StoreFrontData } from "../types/global";
 
 const storeFrontDataQuery = `
     query {
@@ -8,6 +9,12 @@ const storeFrontDataQuery = `
               title	
               handle
             }
+          }
+        }
+        menu(handle: "main-menu"){
+          items {
+            title
+            url
           }
         }
         pages(first: 10){
@@ -33,19 +40,32 @@ type StoreFrontDataResponse = {
       };
     }[];
   };
+  menu: {
+    items: {
+      title: string;
+      url: string;
+    }[];
+  };
   pages: {
     edges: {
       node: {
-        title: string
-        handle: string
-      }
-    }[]
-  }
+        title: string;
+        handle: string;
+      };
+    }[];
+  };
   shop: {
     name: string;
   };
 };
-export default async function getStoreFrontData() {
+
+const getPathName = (dataUrl: string) => {
+  const url = new URL(dataUrl);
+  const { pathname } = url;
+  return pathname;
+};
+
+export default async function getStoreFrontData(): Promise<StoreFrontData> {
   const { data } = await config.fetch<StoreFrontDataResponse>(
     storeFrontDataQuery
   );
@@ -55,5 +75,11 @@ export default async function getStoreFrontData() {
     collections,
     pages,
     shop: data.shop,
+    menu: {
+      items: data.menu.items.map((item) => ({
+        handle: getPathName(item.url),
+        title: item.title,
+      })),
+    },
   };
 }

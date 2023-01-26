@@ -10,10 +10,18 @@ export type ProductShort = {
 
 export type Product = ProductShort & {
   variants: Variant[];
+  options: {
+    name: string;
+    values: string[];
+  }[];
 };
 
 export type Variant = {
   id: string;
+  selectedOptions: {
+    name: string;
+    value: string;
+  }[];
 };
 
 export type ProductResponseProductShort = ProductShort & {

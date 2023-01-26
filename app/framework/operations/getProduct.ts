@@ -10,10 +10,18 @@ const getProductQuery = `
             title
             vendor
             description
+            options{
+              name
+              values
+            }
             variants(first: 10) {
               edges {
                 node {
                   id
+                  selectedOptions{
+                    name
+                    value
+                  }
                 }
               }
             }

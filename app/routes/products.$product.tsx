@@ -1,5 +1,6 @@
 import { type LoaderArgs } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
+import { ProductView } from "~/components/Product";
 import { config } from "~/framework";
 
 export async function loader({ params }: LoaderArgs) {
@@ -11,18 +12,7 @@ export async function loader({ params }: LoaderArgs) {
 
 export default function Product() {
   const product = useLoaderData<typeof loader>();
-  const fetcher = useFetcher();
-  if (!product) return null;
-  return (
-    <div>
-      {product.title}
-      <img src={product.images[0].url} alt="" />
 
-      <fetcher.Form method="post" action="/cart">
-        <input type="hidden" name="id" value={product.variants[0].id} />
-        <input type="number" name="quantity" defaultValue={1} />
-        <button>Add to cart</button>
-      </fetcher.Form>
-    </div>
-  );
+  if (!product) return null;
+  return <ProductView product={product} />;
 }

@@ -6,11 +6,11 @@ import { config } from "~/framework";
 export async function loader(args: LoaderArgs) {
   const shopInfoPromise = config.operations.getStoreFrontData();
   const productsPromise = config.operations.getProducts({ first: 30 });
-  const [{ shop, collections }, products] = await Promise.all([
+  const [{ shop, collections, menu }, products] = await Promise.all([
     shopInfoPromise,
     productsPromise,
   ]);
-  return json({ shop, collections, products });
+  return json({ shop, collections, products, menu });
 }
 
 export default function Index() {

@@ -1,9 +1,5 @@
 import { config } from "..";
-import { type Edge } from "../types/global";
-import {
-  type ProductShort,
-  type ProductResponseProductShort,
-} from "../types/product";
+import type { Collection, CollectionResponse } from "../types/collection";
 
 const collectionQuery = `
     query collectionQuery (
@@ -41,19 +37,6 @@ const collectionQuery = `
     }
 `;
 
-type CollectionResponse = {
-  collection: {
-    title: string;
-    description: string;
-    products: Edge<ProductResponseProductShort>;
-  };
-};
-
-type Collection = {
-  title: string;
-  description: string;
-  products: ProductShort[];
-};
 export default async function getCollection(
   handle: string
 ): Promise<Collection> {
