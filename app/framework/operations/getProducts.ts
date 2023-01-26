@@ -33,7 +33,7 @@ const getProductsQuery = `
 `;
 
 type GetProductArgs = {
-  handle?: string;
+  query?: string;
   first: number;
 };
 export default async function getProducts(

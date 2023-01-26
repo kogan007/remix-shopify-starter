@@ -5,6 +5,7 @@ const collectionQuery = `
     query collectionQuery (
         $handle: String!
         $first: Int = 50
+        $filters: [ProductFilter!]
     ) {
         collection(
             handle: $handle
@@ -13,6 +14,7 @@ const collectionQuery = `
             title
             products (
                 first: $first
+                filters: $filters
             ) {
                 edges {
                     node {
@@ -37,12 +39,25 @@ const collectionQuery = `
     }
 `;
 
+type Filter =
+  | {
+      price: {
+        min?: number;
+        max?: number;
+      };
+    }
+  | {
+      available: boolean;
+    };
+
 export default async function getCollection(
-  handle: string
+  handle: string,
+  filters?: Filter[]
 ): Promise<Collection> {
   const { data } = await config.fetch<CollectionResponse>(collectionQuery, {
     variables: {
       handle,
+      filters,
     },
   });
   const collection = {

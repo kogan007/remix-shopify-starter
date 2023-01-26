@@ -30,7 +30,7 @@ export type LineItem = {
 };
 
 export type Cart = {
-  items: LineItem[];
+  lines: LineItem[];
   totalQuantity: number;
   checkoutUrl: string;
 };

@@ -1,6 +1,11 @@
 import type { Product } from "~/framework/types/product";
 import { Tab } from "@headlessui/react";
-import { useFetcher } from "@remix-run/react";
+import {
+  useFetcher,
+  useLocation,
+  useSearchParams,
+  useSubmit,
+} from "@remix-run/react";
 import { useState } from "react";
 
 function classNames(...classes: String[]) {
@@ -25,15 +30,37 @@ const getSelectedVariant = (
 };
 export default function ProductView({ product }: { product: Product }) {
   const fetcher = useFetcher();
+  const submit = useSubmit();
+  const [params] = useSearchParams();
+  const selectedVariant = params.get("variant");
+
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>(
     () => {
+      if (selectedVariant) {
+        const variant = product.variants.find(
+          (variant) =>
+            variant.id.split("/ProductVariant/")[1] === selectedVariant
+        );
+
+        if (!variant) {
+          return product.options.reduce(
+            (a, v) => ({ ...a, [v.name]: v.values[0] }),
+            {}
+          );
+        } else {
+          return variant.selectedOptions.reduce(
+            (a, v) => ({ ...a, [v.name]: v.value }),
+            {}
+          );
+        }
+      }
       return product.options.reduce(
         (a, v) => ({ ...a, [v.name]: v.values[0] }),
         {}
       );
     }
   );
-
+  let location = useLocation();
   const variant = getSelectedVariant(product.variants, selectedOptions);
 
   return (
@@ -129,27 +156,39 @@ export default function ProductView({ product }: { product: Product }) {
                 /> */}
             </div>
 
+            <div className="flex flex-col">
+              {product.options.map((opt) => (
+                <select
+                  key={opt.name}
+                  value={selectedOptions[opt.name]}
+                  onChange={(e) => {
+                    const val = e.currentTarget.value;
+                    setSelectedOptions((opts) => ({
+                      ...opts,
+                      [opt.name]: val,
+                    }));
+                    const formData = new FormData();
+                    formData.append(
+                      "variant",
+                      getSelectedVariant(product.variants, {
+                        ...selectedOptions,
+                        [opt.name]: val,
+                      }).id.split("/ProductVariant/")[1]
+                    );
+                    submit(formData);
+                  }}
+                >
+                  {opt.values.map((val) => (
+                    <option key={val}>{val}</option>
+                  ))}
+                </select>
+              ))}
+            </div>
+
             <fetcher.Form method="post" action="/cart">
               <input type="hidden" name="id" value={variant?.id} />
               <input type="number" name="quantity" defaultValue={1} />
-              <div className="flex flex-col">
-                {product.options.map((opt) => (
-                  <select
-                    key={opt.name}
-                    onChange={(e) => {
-                      const val = e.currentTarget.value;
-                      setSelectedOptions((opts) => ({
-                        ...opts,
-                        [opt.name]: val,
-                      }));
-                    }}
-                  >
-                    {opt.values.map((val) => (
-                      <option key={val}>{val}</option>
-                    ))}
-                  </select>
-                ))}
-              </div>
+
               <button disabled={!variant?.availableForSale}>
                 {!variant?.availableForSale ? "Out of stock" : "Add to cart"}
               </button>

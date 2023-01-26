@@ -11,6 +11,7 @@ import { useCart, useCustomer, useMenu } from "~/hooks";
 import { Link } from "@remix-run/react";
 import { Sidecart } from "~/components/Cart";
 import { CustomerPopover } from "~/components/Customer";
+import { QuickSearch } from "~/components/Common";
 
 export default function Header() {
   const menu = useMenu();
@@ -18,7 +19,7 @@ export default function Header() {
   const [cartOpen, setCartOpen] = useState(false);
   const cart = useCart();
   const customer = useCustomer();
-  console.log(customer);
+
   return (
     <header className="relative z-10">
       <nav aria-label="Top">
@@ -74,20 +75,20 @@ export default function Header() {
         </div>
 
         {/* Secondary navigation */}
-        <div className="bg-white">
+        <div className="bg-white relative">
           <div className="border-b border-gray-200">
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <div className="flex h-16 items-center justify-between">
                 {/* Logo (lg+) */}
                 <div className="hidden lg:flex lg:items-center">
-                  <a href="/">
+                  <Link to="/">
                     <span className="sr-only">Your Company</span>
                     <img
                       className="h-8 w-auto"
                       src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
                       alt=""
                     />
-                  </a>
+                  </Link>
                 </div>
 
                 <div className="hidden h-full lg:flex">
@@ -268,16 +269,7 @@ export default function Header() {
                   <div className="flex items-center lg:ml-8">
                     <div className="flex space-x-8">
                       <div className="hidden lg:flex">
-                        <a
-                          href="/"
-                          className="-m-2 p-2 text-gray-400 hover:text-gray-500"
-                        >
-                          <span className="sr-only">Search</span>
-                          <MagnifyingGlassIcon
-                            className="h-6 w-6"
-                            aria-hidden="true"
-                          />
-                        </a>
+                        <QuickSearch />
                       </div>
 
                       <div className="flex">

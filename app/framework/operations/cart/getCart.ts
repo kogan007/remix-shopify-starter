@@ -54,7 +54,7 @@ async function getShopifyCart(cartId: string): Promise<Cart> {
 
   const formatCart = {
     ...cart,
-    items: cart.lines.edges.map(({ node }) => ({
+    lines: cart.lines.edges.map(({ node }) => ({
       ...node,
       product: {
         ...node.merchandise.product,
