@@ -5,6 +5,7 @@ import getProduct from "./operations/getProduct";
 import cart from "./operations/cart";
 import auth from "./operations/auth";
 import getCollection from "./operations/getCollection";
+import getPage from "./operations/getPage";
 
 const API_URL = process.env.API_URL;
 const STOREFRONT_API_TOKEN = process.env.STOREFRONT_API_TOKEN;
@@ -25,6 +26,7 @@ const operations = {
   cart,
   auth,
   getCollection,
+  getPage,
 };
 
 export const config = {

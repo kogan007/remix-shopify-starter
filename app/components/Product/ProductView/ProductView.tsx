@@ -1,11 +1,6 @@
 import type { Product } from "~/framework/types/product";
 import { Tab } from "@headlessui/react";
-import {
-  useFetcher,
-  useLocation,
-  useSearchParams,
-  useSubmit,
-} from "@remix-run/react";
+import { useFetcher, useSearchParams, useSubmit } from "@remix-run/react";
 import { useState } from "react";
 
 function classNames(...classes: String[]) {
@@ -60,7 +55,7 @@ export default function ProductView({ product }: { product: Product }) {
       );
     }
   );
-  let location = useLocation();
+
   const variant = getSelectedVariant(product.variants, selectedOptions);
 
   return (
@@ -185,7 +180,7 @@ export default function ProductView({ product }: { product: Product }) {
               ))}
             </div>
 
-            <fetcher.Form method="post" action="/cart">
+            <fetcher.Form method="post" action="/cart?action=add">
               <input type="hidden" name="id" value={variant?.id} />
               <input type="number" name="quantity" defaultValue={1} />
 

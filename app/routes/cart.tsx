@@ -6,14 +6,23 @@ export async function loader({ request }: LoaderArgs) {
   return await config.operations.cart.getCart(request);
 }
 export async function action({ request }: ActionArgs) {
-  return await config.operations.cart.addToCart(request);
+  const { searchParams } = new URL(request.url);
+  const action = searchParams.get("action");
+  switch (action) {
+    case "remove": {
+      return await config.operations.cart.removeItem(request);
+    }
+    default: {
+      return await config.operations.cart.addToCart(request);
+    }
+  }
 }
 export default function Cart() {
   const data = useLoaderData<typeof loader>();
   if (!data) return null;
   return (
     <div>
-      {data.items.map((item) => (
+      {data.lines.map((item) => (
         <div key={item.id}>
           <Link to={`/products/` + item.product.handle}>
             {item.product.title}
