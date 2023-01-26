@@ -1,3 +1,3 @@
 import addToCart from "./addToCart";
-
-export default { addToCart };
+import getCart from "./getCart";
+export default { addToCart, getCart };

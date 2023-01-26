@@ -5,7 +5,7 @@ import { config } from "~/framework";
 
 export async function loader(args: LoaderArgs) {
   const shopInfoPromise = config.operations.getStoreFrontData();
-  const productsPromise = config.operations.getProducts();
+  const productsPromise = config.operations.getProducts({ first: 30 });
   const [{ shop, collections }, products] = await Promise.all([
     shopInfoPromise,
     productsPromise,
@@ -22,7 +22,11 @@ export default function Index() {
       <div>
         Collections
         {collections.map((collection) => (
-          <div key={collection.handle}>{collection.title}</div>
+          <div key={collection.handle}>
+            <Link to={`/collections/` + collection.handle}>
+              {collection.title}
+            </Link>
+          </div>
         ))}
       </div>
       <div>

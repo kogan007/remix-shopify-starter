@@ -3,7 +3,7 @@ import { type ProductShort, type ProductResponseShort } from "../types/product";
 
 const getProductsQuery = `
     query (
-        $first: Int = 250
+        $first: Int!
         $query: String = ""
     ) {
         products (
@@ -34,10 +34,10 @@ const getProductsQuery = `
 
 type GetProductArgs = {
   handle?: string;
-  first?: number;
+  first: number;
 };
 export default async function getProducts(
-  args: GetProductArgs = {}
+  args: GetProductArgs = { first: 50 }
 ): Promise<ProductShort[]> {
   const { data } = await config.fetch<ProductResponseShort>(getProductsQuery, {
     variables: args,

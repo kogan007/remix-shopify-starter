@@ -1,3 +1,5 @@
+import { type Edge, type Image } from "./global";
+
 export type ProductShort = {
   id: string;
   title: string;
@@ -12,19 +14,6 @@ export type Product = ProductShort & {
 
 export type Variant = {
   id: string;
-};
-
-interface Edge<T> {
-  edges: {
-    node: T;
-  }[];
-}
-
-export type Image = {
-  url: string;
-  altText: string;
-  width: number;
-  height: number;
 };
 
 export type ProductResponseProductShort = ProductShort & {
