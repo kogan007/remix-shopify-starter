@@ -1,13 +1,41 @@
 import type { Product } from "~/framework/types/product";
 import { Tab } from "@headlessui/react";
 import { useFetcher } from "@remix-run/react";
+import { useState } from "react";
 
 function classNames(...classes: String[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+type SelectedOptions = {
+  [key: string]: string;
+};
+
+const getSelectedVariant = (
+  variants: Product["variants"],
+  options: SelectedOptions
+) => {
+  return variants.find((variant) => {
+    return Object.entries(options).every(([name, value]) => {
+      return variant.selectedOptions.some(
+        (opt) => opt.name === name && opt.value === value
+      );
+    });
+  })!;
+};
 export default function ProductView({ product }: { product: Product }) {
   const fetcher = useFetcher();
+  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>(
+    () => {
+      return product.options.reduce(
+        (a, v) => ({ ...a, [v.name]: v.values[0] }),
+        {}
+      );
+    }
+  );
+
+  const variant = getSelectedVariant(product.variants, selectedOptions);
+
   return (
     <div className="mx-auto max-w-7xl sm:px-6 sm:pt-16 lg:px-8">
       <div className="mx-auto max-w-2xl lg:max-w-none">
@@ -102,8 +130,26 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             <fetcher.Form method="post" action="/cart">
-              <input type="hidden" name="id" value={product.variants[0].id} />
+              <input type="hidden" name="id" value={variant.id} />
               <input type="number" name="quantity" defaultValue={1} />
+              <div className="flex flex-col">
+                {product.options.map((opt) => (
+                  <select
+                    key={opt.name}
+                    onChange={(e) => {
+                      const val = e.currentTarget.value;
+                      setSelectedOptions((opts) => ({
+                        ...opts,
+                        [opt.name]: val,
+                      }));
+                    }}
+                  >
+                    {opt.values.map((val) => (
+                      <option key={val}>{val}</option>
+                    ))}
+                  </select>
+                ))}
+              </div>
               <button>Add to cart</button>
             </fetcher.Form>
 
