@@ -27,7 +27,7 @@ export default function Cart() {
     <div>
       {data.lines.map((item) => (
         <div key={item.id}>
-          <Link to={`/products/` + item.product.handle}>
+          <Link to={`/products/` + item.product.handle} prefetch="intent">
             {item.product.title}
           </Link>
           <span>Quantity: {item.quantity}</span>

@@ -30,7 +30,9 @@ export default function CustomerPopover() {
                 <li key={link.path} className="flex items-center py-4">
                   <div className="flex-auto">
                     <h3 className="font-medium text-gray-900">
-                      <Link to={link.path}>{link.name}</Link>
+                      <Link to={link.path} prefetch="intent">
+                        {link.name}
+                      </Link>
                     </h3>
                   </div>
                 </li>

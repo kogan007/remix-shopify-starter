@@ -9,6 +9,12 @@ const getCartQuery = `
         cart(
             id: $cartId
         ) {
+            cost {
+              subtotalAmount{
+                amount
+                currencyCode
+              }
+            }
             totalQuantity
             checkoutUrl
             lines(first: 250) {
@@ -22,11 +28,15 @@ const getCartQuery = `
                                   name
                                   value
                                 }
+                                price {
+                                  amount
+                                  currencyCode
+                                }
                                 product {
                                     id
                                     title
                                     vendor
-                                    handle
+                                    handle   
                                     images(first: 1){
                                         edges {
                                             node {
@@ -62,6 +72,7 @@ async function getShopifyCart(cartId: string): Promise<Cart> {
       ...node,
       product: {
         ...node.merchandise.product,
+        price: node.merchandise.price,
         images: node.merchandise.product.images.edges.map(({ node }) => ({
           ...node,
         })),

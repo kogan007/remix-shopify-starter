@@ -15,6 +15,7 @@ export type StoreFrontData = {
   collections: {
     title: string;
     handle: string;
+    image: Image;
   }[];
   pages: {
     handle: string;
@@ -29,4 +30,9 @@ export type StoreFrontData = {
       handle: string;
     }[];
   };
+};
+
+export type Price = {
+  amount: number;
+  currencyCode: string;
 };

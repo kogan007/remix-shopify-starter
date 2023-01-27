@@ -16,6 +16,16 @@ const getProductsQuery = `
                     title
                     vendor
                     handle
+                    priceRange{
+                      maxVariantPrice{
+                        amount
+                        currencyCode
+                      }
+                      minVariantPrice{
+                        amount
+                        currencyCode
+                      }
+                    }
                     images(first: 1){
                         edges {
                             node {

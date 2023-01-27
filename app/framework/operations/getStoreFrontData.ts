@@ -1,5 +1,5 @@
 import { config } from "..";
-import type { StoreFrontData } from "../types/global";
+import type { Image, StoreFrontData } from "../types/global";
 
 const storeFrontDataQuery = `
     query {
@@ -8,6 +8,12 @@ const storeFrontDataQuery = `
             node{
               title	
               handle
+              image {
+                url
+                altText
+                width
+                height
+              }
             }
           }
         }
@@ -37,6 +43,7 @@ type StoreFrontDataResponse = {
       node: {
         title: string;
         handle: string;
+        image: Image;
       };
     }[];
   };

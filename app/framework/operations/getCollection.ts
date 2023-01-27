@@ -12,6 +12,12 @@ const collectionQuery = `
         ) {
             description 
             title
+            image {
+              url
+              altText
+              width
+              height
+            }
             products (
                 first: $first
                 filters: $filters

@@ -1,5 +1,5 @@
 import { config } from "..";
-import { type ProductResponseProduct } from "../types/product";
+import { type Product, type ProductResponseProduct } from "../types/product";
 
 const getProductQuery = `
     query (
@@ -14,11 +14,25 @@ const getProductQuery = `
               name
               values
             }
+            priceRange{
+              maxVariantPrice{
+                amount
+                currencyCode
+              }
+              minVariantPrice{
+                amount
+                currencyCode
+              }
+            }
             variants(first: 250) {
               edges {
                 node {
                   id
                   availableForSale
+                  price {
+                    amount
+                    currencyCode
+                  }
                   selectedOptions{
                     name
                     value
@@ -40,7 +54,7 @@ const getProductQuery = `
     }
 `;
 
-export default async function getProduct(handle: string) {
+export default async function getProduct(handle: string): Promise<Product> {
   try {
     const { data } = await config.fetch<{ product: ProductResponseProduct }>(
       getProductQuery,

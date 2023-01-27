@@ -1,4 +1,4 @@
-import { type Edge, type Image } from "./global";
+import { type Price, type Edge, type Image } from "./global";
 
 export type ProductShort = {
   id: string;
@@ -6,6 +6,10 @@ export type ProductShort = {
   vendor: string;
   handle: string;
   images: Image[];
+  priceRange: {
+    maxVariantPrice: Price;
+    minVariantPrice: Price;
+  };
 };
 
 export type Product = ProductShort & {
@@ -23,6 +27,7 @@ export type Variant = {
     value: string;
   }[];
   availableForSale: boolean;
+  price: Price;
 };
 
 export type ProductResponseProductShort = ProductShort & {
@@ -35,4 +40,8 @@ export type ProductResponseShort = {
 
 export type ProductResponseProduct = ProductResponseProductShort & {
   variants: Edge<Variant>;
+  options: {
+    name: string;
+    values: string[];
+  }[];
 };

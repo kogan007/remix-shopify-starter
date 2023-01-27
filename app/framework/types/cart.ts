@@ -1,4 +1,4 @@
-import { type Image, type Edge } from "~/framework/types/global";
+import { type Image, type Edge, type Price } from "~/framework/types/global";
 import { type ProductShort } from "~/framework/types/product";
 
 export type LineItemResponse = {
@@ -9,6 +9,7 @@ export type LineItemResponse = {
       name: string;
       value: string;
     }[];
+    price: Price;
     product: {
       id: string;
       title: string;
@@ -24,13 +25,20 @@ export type CartResponse = {
     checkoutUrl: string;
     totalQuantity: number;
     lines: Edge<LineItemResponse>;
+    cost: {
+      subtotalAmount: Price;
+    };
   };
 };
 
 export type LineItem = {
   quantity: number;
   id: string;
-  product: ProductShort & {
+  product: Pick<
+    ProductShort,
+    "handle" | "id" | "images" | "title" | "vendor"
+  > & {
+    price: Price;
     selectedOptions: {
       name: string;
       value: string;
@@ -42,4 +50,7 @@ export type Cart = {
   lines: LineItem[];
   totalQuantity: number;
   checkoutUrl: string;
+  cost: {
+    subtotalAmount: Price;
+  };
 };

@@ -1,23 +1,22 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Dialog, Transition } from "@headlessui/react";
-import { type Dispatch, Fragment, type SetStateAction } from "react";
-import { useCart } from "~/hooks";
+import { Fragment } from "react";
+import { useCart, usePrice } from "~/hooks";
 import { Link, useFetcher } from "@remix-run/react";
 import type { Cart } from "~/framework/types/cart";
 import classNames from "~/framework/lib/classNames";
+import { useUI } from "~/components/UI/context";
 
-export default function Sidecart({
-  open,
-  setOpen,
-}: {
-  open: boolean;
-  setOpen: Dispatch<SetStateAction<boolean>>;
-}) {
+export default function Sidecart() {
   const cart = useCart();
-
+  const { cartOpen, closeCart } = useUI();
+  const { price: subtotal } = usePrice({
+    amount: cart?.cost.subtotalAmount.amount ?? 0,
+    currencyCode: cart?.cost.subtotalAmount.currencyCode ?? "",
+  });
   return (
-    <Transition.Root show={open} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={setOpen}>
+    <Transition.Root show={cartOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={closeCart}>
         <Transition.Child
           as={Fragment}
           enter="ease-in-out duration-500"
@@ -53,7 +52,7 @@ export default function Sidecart({
                           <button
                             type="button"
                             className="-m-2 p-2 text-gray-400 hover:text-gray-500"
-                            onClick={() => setOpen(false)}
+                            onClick={closeCart}
                           >
                             <span className="sr-only">Close panel</span>
                             <XMarkIcon className="h-6 w-6" aria-hidden="true" />
@@ -77,7 +76,7 @@ export default function Sidecart({
                     <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
                       <div className="flex justify-between text-base font-medium text-gray-900">
                         <p>Subtotal</p>
-                        <p>$262.00</p>
+                        <p>{subtotal}</p>
                       </div>
                       <p className="mt-0.5 text-sm text-gray-500">
                         Shipping and taxes calculated at checkout.
@@ -96,7 +95,7 @@ export default function Sidecart({
                           <button
                             type="button"
                             className="font-medium text-indigo-600 hover:text-indigo-500"
-                            onClick={() => setOpen(false)}
+                            onClick={closeCart}
                           >
                             Continue Shopping
                             <span aria-hidden="true"> &rarr;</span>
@@ -117,7 +116,10 @@ export default function Sidecart({
 
 const Item = ({ item }: { item: Cart["lines"][0] }) => {
   const fetcher = useFetcher();
-
+  const { price } = usePrice({
+    amount: item.product.price.amount,
+    currencyCode: item.product.price.currencyCode,
+  });
   return (
     <>
       <div
@@ -137,11 +139,11 @@ const Item = ({ item }: { item: Cart["lines"][0] }) => {
         <div>
           <div className="flex justify-between text-base font-medium text-gray-900">
             <h3>
-              <Link to={`/products/` + item.product.handle}>
+              <Link to={`/products/` + item.product.handle} prefetch="intent">
                 {item.product.title}
               </Link>
             </h3>
-            {/* <p className="ml-4">{product.price}</p> */}
+            <p className="ml-4">{price}</p>
           </div>
         </div>
         <div className="flex flex-1 items-end justify-between text-sm">

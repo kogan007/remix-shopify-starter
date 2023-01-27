@@ -7,12 +7,12 @@ export default function CategoryLayout({ data }: { data: Collection }) {
     <div className="mx-auto max-w-2xl px-4 lg:max-w-7xl lg:px-8">
       <div className="border-b border-gray-200 pt-24 pb-10">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-          New Arrivals
+          {data.title}
         </h1>
-        <p className="mt-4 text-base text-gray-500">
+        {/* <p className="mt-4 text-base text-gray-500">
           Checkout out the latest release of Basic Tees, new and improved with
           four openings!
-        </p>
+        </p> */}
       </div>
 
       <div className="pt-12 pb-24 lg:grid lg:grid-cols-3 lg:gap-x-8 xl:grid-cols-4">
@@ -80,7 +80,7 @@ export default function CategoryLayout({ data }: { data: Collection }) {
                 </div>
                 <div className="flex flex-1 flex-col space-y-2 p-4">
                   <h3 className="text-sm font-medium text-gray-900">
-                    <Link to={`/products/` + product.handle}>
+                    <Link to={`/products/` + product.handle} prefetch="intent">
                       <span aria-hidden="true" className="absolute inset-0" />
                       {product.title}
                     </Link>

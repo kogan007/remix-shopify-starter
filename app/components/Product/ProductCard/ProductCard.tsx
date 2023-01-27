@@ -15,7 +15,7 @@ export default function ProductCard({ product }: { product: ProductShort }) {
         <div className="mt-6">
           {/* <p className="text-sm text-gray-500">{product.color}</p> */}
           <h3 className="mt-1 font-semibold text-gray-900">
-            <Link to={`/products/` + product.handle}>
+            <Link to={`/products/` + product.handle} prefetch="intent">
               <span className="absolute inset-0" />
               {product.title}
             </Link>

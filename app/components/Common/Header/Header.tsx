@@ -12,11 +12,12 @@ import { Link } from "@remix-run/react";
 import { Sidecart } from "~/components/Cart";
 import { CustomerPopover } from "~/components/Customer";
 import { QuickSearch } from "~/components/Common";
+import { useUI } from "~/components/UI/context";
 
 export default function Header() {
   const menu = useMenu();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
+  const { openCart } = useUI();
   const cart = useCart();
   const customer = useCustomer();
 
@@ -57,19 +58,27 @@ export default function Header() {
             </p>
 
             <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-end lg:space-x-6">
-              <a
-                href="/"
-                className="text-sm font-medium text-white hover:text-gray-100"
-              >
-                Create an account
-              </a>
-              <span className="h-6 w-px bg-gray-600" aria-hidden="true" />
-              <a
-                href="/"
-                className="text-sm font-medium text-white hover:text-gray-100"
-              >
-                Sign in
-              </a>
+              {customer ? (
+                <span className="text-sm font-medium text-white hover:text-gray-100">
+                  Welcome back, {customer.firstName}
+                </span>
+              ) : (
+                <>
+                  <a
+                    href="/"
+                    className="text-sm font-medium text-white hover:text-gray-100"
+                  >
+                    Create an account
+                  </a>
+                  <span className="h-6 w-px bg-gray-600" aria-hidden="true" />
+                  <a
+                    href="/"
+                    className="text-sm font-medium text-white hover:text-gray-100"
+                  >
+                    Sign in
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -81,7 +90,7 @@ export default function Header() {
               <div className="flex h-16 items-center justify-between">
                 {/* Logo (lg+) */}
                 <div className="hidden lg:flex lg:items-center">
-                  <Link to="/">
+                  <Link to="/" prefetch="intent">
                     <span className="sr-only">Your Company</span>
                     <img
                       className="h-8 w-auto"
@@ -298,7 +307,7 @@ export default function Header() {
                         className="group -m-2 flex items-center p-2"
                         onClick={(e) => {
                           e.preventDefault();
-                          setCartOpen(true);
+                          openCart();
                         }}
                       >
                         <ShoppingCartIcon
@@ -318,7 +327,7 @@ export default function Header() {
           </div>
         </div>
       </nav>
-      <Sidecart open={cartOpen} setOpen={setCartOpen} />
+      <Sidecart />
     </header>
   );
 }

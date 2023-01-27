@@ -1,8 +1,10 @@
 import type { Product } from "~/framework/types/product";
 import { RadioGroup, Tab } from "@headlessui/react";
 import { useFetcher, useSearchParams, useSubmit } from "@remix-run/react";
-import { useState } from "react";
-import classNames from "~/framework/lib/classnames";
+import { type ReactNode, useState } from "react";
+import classNames from "~/framework/lib/classNames";
+import { usePrice } from "~/hooks";
+import { useUI } from "~/components/UI/context";
 
 type SelectedOptions = {
   [key: string]: string;
@@ -20,11 +22,18 @@ const getSelectedVariant = (
     });
   })!;
 };
-export default function ProductView({ product }: { product: Product }) {
+export default function ProductView({
+  product,
+  children,
+}: {
+  product: Product;
+  children?: ReactNode;
+}) {
   const fetcher = useFetcher();
   const submit = useSubmit();
   const [params] = useSearchParams();
   const selectedVariant = params.get("variant");
+  const { openCart } = useUI();
 
   const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>(
     () => {
@@ -54,6 +63,10 @@ export default function ProductView({ product }: { product: Product }) {
   );
 
   const variant = getSelectedVariant(product.variants, selectedOptions);
+  const { price } = usePrice({
+    amount: variant.price.amount,
+    currencyCode: variant.price.currencyCode,
+  });
 
   return (
     <div className="mx-auto max-w-7xl sm:px-6 sm:pt-16 lg:px-8">
@@ -114,9 +127,7 @@ export default function ProductView({ product }: { product: Product }) {
 
             <div className="mt-3">
               <h2 className="sr-only">Product information</h2>
-              {/* <p className="text-3xl tracking-tight text-gray-900">
-              {product.price}
-            </p> */}
+              <p className="text-3xl tracking-tight text-gray-900">{price}</p>
             </div>
 
             {/* Reviews */}
@@ -149,35 +160,45 @@ export default function ProductView({ product }: { product: Product }) {
             </div>
 
             <div className="flex flex-col">
-              {product.options.map((opt) => (
-                <ProductOption
-                  option={opt}
-                  selectedOptions={selectedOptions}
-                  setSelectedOptions={(val: string) => {
-                    setSelectedOptions((opts) => ({
-                      ...opts,
-                      [opt.name]: val,
-                    }));
-                    const formData = new FormData();
-                    formData.append(
-                      "variant",
-                      getSelectedVariant(product.variants, {
-                        ...selectedOptions,
+              {product.options
+                .filter((opt) => opt.name !== "Title")
+                .map((opt) => (
+                  <ProductOption
+                    option={opt}
+                    selectedOptions={selectedOptions}
+                    setSelectedOptions={(val: string) => {
+                      setSelectedOptions((opts) => ({
+                        ...opts,
                         [opt.name]: val,
-                      }).id.split("/ProductVariant/")[1]
-                    );
-                    submit(formData, { replace: true });
-                  }}
-                  key={opt.name}
-                />
-              ))}
+                      }));
+                      const formData = new FormData();
+                      formData.append(
+                        "variant",
+                        getSelectedVariant(product.variants, {
+                          ...selectedOptions,
+                          [opt.name]: val,
+                        }).id.split("/ProductVariant/")[1]
+                      );
+                      submit(formData, { replace: true });
+                    }}
+                    key={opt.name}
+                  />
+                ))}
             </div>
 
-            <fetcher.Form method="post" action="/cart?action=add">
+            <fetcher.Form
+              method="post"
+              action="/cart?action=add"
+              className="mt-2"
+              onSubmit={() => openCart()}
+            >
               <input type="hidden" name="id" value={variant?.id} />
               <input type="number" name="quantity" defaultValue={1} />
 
-              <button disabled={!variant?.availableForSale}>
+              <button
+                disabled={!variant?.availableForSale}
+                className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              >
                 {!variant?.availableForSale ? "Out of stock" : "Add to cart"}
               </button>
             </fetcher.Form>
@@ -276,6 +297,7 @@ export default function ProductView({ product }: { product: Product }) {
               ))}
             </div> */}
         </section>
+        {children}
       </div>
     </div>
   );
