@@ -1,11 +1,8 @@
 import type { Product } from "~/framework/types/product";
-import { Tab } from "@headlessui/react";
+import { RadioGroup, Tab } from "@headlessui/react";
 import { useFetcher, useSearchParams, useSubmit } from "@remix-run/react";
 import { useState } from "react";
-
-function classNames(...classes: String[]) {
-  return classes.filter(Boolean).join(" ");
-}
+import classNames from "~/framework/lib/classnames";
 
 type SelectedOptions = {
   [key: string]: string;
@@ -153,11 +150,10 @@ export default function ProductView({ product }: { product: Product }) {
 
             <div className="flex flex-col">
               {product.options.map((opt) => (
-                <select
-                  key={opt.name}
-                  value={selectedOptions[opt.name]}
-                  onChange={(e) => {
-                    const val = e.currentTarget.value;
+                <ProductOption
+                  option={opt}
+                  selectedOptions={selectedOptions}
+                  setSelectedOptions={(val: string) => {
                     setSelectedOptions((opts) => ({
                       ...opts,
                       [opt.name]: val,
@@ -170,13 +166,10 @@ export default function ProductView({ product }: { product: Product }) {
                         [opt.name]: val,
                       }).id.split("/ProductVariant/")[1]
                     );
-                    submit(formData);
+                    submit(formData, { replace: true });
                   }}
-                >
-                  {opt.values.map((val) => (
-                    <option key={val}>{val}</option>
-                  ))}
-                </select>
+                  key={opt.name}
+                />
               ))}
             </div>
 
@@ -284,6 +277,51 @@ export default function ProductView({ product }: { product: Product }) {
             </div> */}
         </section>
       </div>
+    </div>
+  );
+}
+
+function ProductOption({
+  option,
+  selectedOptions,
+  setSelectedOptions,
+}: {
+  option: Product["options"][0];
+  selectedOptions: SelectedOptions;
+  setSelectedOptions: any;
+}) {
+  return (
+    <div className="mt-8">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-medium text-gray-900">{option.name}</h2>
+      </div>
+
+      <RadioGroup
+        value={selectedOptions[option.name]}
+        onChange={setSelectedOptions}
+        className="mt-2"
+      >
+        <RadioGroup.Label className="sr-only"> Choose a size </RadioGroup.Label>
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
+          {option.values.map((value) => (
+            <RadioGroup.Option
+              key={value}
+              value={value}
+              className={({ active, checked }) =>
+                classNames(
+                  active ? "ring-2 ring-offset-2 ring-indigo-500" : "",
+                  checked
+                    ? "bg-indigo-600 border-transparent text-white hover:bg-indigo-700"
+                    : "bg-white border-gray-200 text-gray-900 hover:bg-gray-50",
+                  "border rounded-md py-3 px-3 flex items-center justify-center text-sm font-medium uppercase sm:flex-1"
+                )
+              }
+            >
+              <RadioGroup.Label as="span">{value}</RadioGroup.Label>
+            </RadioGroup.Option>
+          ))}
+        </div>
+      </RadioGroup>
     </div>
   );
 }

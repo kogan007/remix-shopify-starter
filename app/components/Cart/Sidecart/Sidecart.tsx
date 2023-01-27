@@ -4,6 +4,7 @@ import { type Dispatch, Fragment, type SetStateAction } from "react";
 import { useCart } from "~/hooks";
 import { Link, useFetcher } from "@remix-run/react";
 import type { Cart } from "~/framework/types/cart";
+import classNames from "~/framework/lib/classNames";
 
 export default function Sidecart({
   open,
@@ -119,7 +120,12 @@ const Item = ({ item }: { item: Cart["lines"][0] }) => {
 
   return (
     <>
-      <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+      <div
+        className={classNames(
+          "h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200",
+          fetcher.state === "submitting" ? "opacity-80" : ""
+        )}
+      >
         <img
           src={item.product.images[0].url}
           alt={item.product.images[0].altText}
@@ -139,7 +145,7 @@ const Item = ({ item }: { item: Cart["lines"][0] }) => {
           </div>
         </div>
         <div className="flex flex-1 items-end justify-between text-sm">
-          <p className="text-gray-500">Qty {item.quantity}</p>
+          <Quantity lineId={item.id} quantity={item.quantity} />
 
           <div className="flex">
             <fetcher.Form action="/cart?action=remove" method="post">
@@ -157,3 +163,38 @@ const Item = ({ item }: { item: Cart["lines"][0] }) => {
     </>
   );
 };
+
+function Quantity({ lineId, quantity }: { lineId: string; quantity: number }) {
+  const fetcher = useFetcher();
+  return (
+    <>
+      <label htmlFor={`quantity-${lineId}`} className="sr-only">
+        Quantity, {quantity}
+      </label>
+      <fetcher.Form
+        method="post"
+        action="/cart?action=quantity"
+        className="flex items-center border rounded"
+      >
+        <input type="hidden" name="id" value={lineId} />
+        <button
+          name="quantity"
+          value={quantity - 1}
+          aria-label="Decrease quantity"
+          className="w-10 h-10 transition text-primary/50 hover:text-primary disabled:cursor-wait"
+        >
+          &#8722;
+        </button>
+        <div>{quantity}</div>
+        <button
+          name="quantity"
+          value={quantity + 1}
+          aria-label="Increase quantity"
+          className="w-10 h-10 transition text-primary/50 hover:text-primary disabled:cursor-wait"
+        >
+          &#43;
+        </button>
+      </fetcher.Form>
+    </>
+  );
+}

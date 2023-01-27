@@ -46,7 +46,10 @@ export async function getCustomer(accessToken: string): Promise<Customer> {
       accessToken,
     },
   });
-  return data.customer;
+  return {
+    ...data.customer,
+    accessToken,
+  };
 }
 
 export async function getAccessToken(

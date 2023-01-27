@@ -18,6 +18,10 @@ const getCartQuery = `
                         id
                         merchandise{
                             ... on ProductVariant {
+                                selectedOptions{
+                                  name
+                                  value
+                                }
                                 product {
                                     id
                                     title
@@ -61,6 +65,7 @@ async function getShopifyCart(cartId: string): Promise<Cart> {
         images: node.merchandise.product.images.edges.map(({ node }) => ({
           ...node,
         })),
+        selectedOptions: node.merchandise.selectedOptions,
       },
     })),
   };

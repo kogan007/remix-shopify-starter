@@ -5,6 +5,10 @@ export type LineItemResponse = {
   quantity: number;
   id: string;
   merchandise: {
+    selectedOptions: {
+      name: string;
+      value: string;
+    }[];
     product: {
       id: string;
       title: string;
@@ -26,7 +30,12 @@ export type CartResponse = {
 export type LineItem = {
   quantity: number;
   id: string;
-  product: ProductShort;
+  product: ProductShort & {
+    selectedOptions: {
+      name: string;
+      value: string;
+    }[];
+  };
 };
 
 export type Cart = {

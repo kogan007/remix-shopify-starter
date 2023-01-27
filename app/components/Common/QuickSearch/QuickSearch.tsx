@@ -15,7 +15,7 @@ export default function QuickSearch() {
         <span className="sr-only">Search</span>
         <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
       </Popover.Button>
-      <Popover.Overlay className="fixed inset-0 bg-black opacity-30" />
+      <Popover.Overlay className="fixed inset-0 bg-black opacity-30 top-10" />
       <Transition
         enter="transition duration-100 ease-out"
         enterFrom="transform scale-95 opacity-0"
@@ -44,7 +44,7 @@ const QuickSearchContent = ({
 }) => {
   const { load, data } = useFetcher();
   const [query, setQuery] = useState("");
-  const [debouncedQuery] = useDebouncedValue(query, 250);
+  const [debouncedQuery] = useDebouncedValue<string>(query, 250);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [resultsOpen, setResultsOpen] = useState(false);

@@ -4,6 +4,7 @@ export type Customer = {
   lastName: string;
   email: string;
   phone: null | number;
+  accessToken: string;
 };
 
 export type CustomerResponse = {

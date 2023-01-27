@@ -1,4 +1,5 @@
 import addToCart from "./addToCart";
 import getCart from "./getCart";
 import removeItem from "./removeItem";
-export default { addToCart, getCart, removeItem };
+import quantity from "./quantity";
+export default { addToCart, getCart, removeItem, quantity };
