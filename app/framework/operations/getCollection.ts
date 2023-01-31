@@ -1,4 +1,5 @@
 import { config } from "..";
+import { flattenConnection } from "../lib/utils";
 import type { Collection, CollectionResponse } from "../types/collection";
 
 const collectionQuery = `
@@ -6,6 +7,9 @@ const collectionQuery = `
         $handle: String!
         $first: Int = 50
         $filters: [ProductFilter!]
+        $country: CountryCode
+    ) @inContext(
+      country: $country
     ) {
         collection(
             handle: $handle
@@ -58,19 +62,21 @@ type Filter =
 
 export default async function getCollection(
   handle: string,
-  filters?: Filter[]
+  filters?: Filter[],
+  country: string = "US"
 ): Promise<Collection> {
   const { data } = await config.fetch<CollectionResponse>(collectionQuery, {
     variables: {
       handle,
       filters,
+      country: country.toUpperCase(),
     },
   });
   const collection = {
     ...data.collection,
-    products: data.collection.products.edges.map(({ node }) => ({
-      ...node,
-      images: node.images.edges.map(({ node }) => ({ ...node })),
+    products: flattenConnection(data.collection.products).map((item) => ({
+      ...item,
+      images: flattenConnection(item.images),
     })),
   };
   return collection;

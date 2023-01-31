@@ -1,4 +1,5 @@
 import { config } from "..";
+import { flattenConnection } from "../lib/utils";
 import type { Image, StoreFrontData } from "../types/global";
 
 const storeFrontDataQuery = `
@@ -15,6 +16,24 @@ const storeFrontDataQuery = `
                 height
               }
             }
+          }
+        }
+        footerCompany: menu(handle: "footer-company"){
+          items {
+            title
+            url
+          }
+        }
+        footerShop: menu(handle: "footer-shop"){
+          items {
+            title
+            url
+          }
+        }
+        footerSocial: menu(handle: "footer-social"){
+          items {
+            title
+            url
           }
         }
         menu(handle: "main-menu"){
@@ -37,6 +56,13 @@ const storeFrontDataQuery = `
     }
 `;
 
+type Menu = {
+  items: {
+    title: string;
+    url: string;
+  }[];
+};
+
 type StoreFrontDataResponse = {
   collections: {
     edges: {
@@ -47,12 +73,10 @@ type StoreFrontDataResponse = {
       };
     }[];
   };
-  menu: {
-    items: {
-      title: string;
-      url: string;
-    }[];
-  };
+  footerCompany: Menu;
+  footerShop: Menu;
+  footerSocial: Menu;
+  menu: Menu;
   pages: {
     edges: {
       node: {
@@ -76,12 +100,30 @@ export default async function getStoreFrontData(): Promise<StoreFrontData> {
   const { data } = await config.fetch<StoreFrontDataResponse>(
     storeFrontDataQuery
   );
-  const collections = data.collections.edges.map(({ node }) => ({ ...node }));
-  const pages = data.pages.edges.map(({ node }) => ({ ...node }));
+  const collections = flattenConnection(data.collections);
+  const pages = flattenConnection(data.pages);
   return {
     collections,
     pages,
     shop: data.shop,
+    footerCompany: {
+      items: data.footerCompany.items.map((item) => ({
+        handle: getPathName(item.url),
+        title: item.title,
+      })),
+    },
+    footerSocial: {
+      items: data.footerSocial.items.map((item) => ({
+        handle: getPathName(item.url),
+        title: item.title,
+      })),
+    },
+    footerShop: {
+      items: data.footerShop.items.map((item) => ({
+        handle: getPathName(item.url),
+        title: item.title,
+      })),
+    },
     menu: {
       items: data.menu.items.map((item) => ({
         handle: getPathName(item.url),

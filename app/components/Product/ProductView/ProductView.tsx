@@ -1,7 +1,7 @@
 import type { Product } from "~/framework/types/product";
 import { RadioGroup, Tab } from "@headlessui/react";
 import { useFetcher, useSearchParams, useSubmit } from "@remix-run/react";
-import { type ReactNode, useState } from "react";
+import { type ReactNode, useState, useEffect, useCallback } from "react";
 import classNames from "~/framework/lib/classNames";
 import { usePrice } from "~/hooks";
 import { useUI } from "~/components/UI/context";
@@ -35,37 +35,39 @@ export default function ProductView({
   const selectedVariant = params.get("variant");
   const { openCart } = useUI();
 
-  const [selectedOptions, setSelectedOptions] = useState<SelectedOptions>(
-    () => {
-      if (selectedVariant) {
-        const variant = product.variants.find(
-          (variant) =>
-            variant.id.split("/ProductVariant/")[1] === selectedVariant
-        );
-
-        if (!variant) {
-          return product.options.reduce(
-            (a, v) => ({ ...a, [v.name]: v.values[0] }),
-            {}
-          );
-        } else {
-          return variant.selectedOptions.reduce(
-            (a, v) => ({ ...a, [v.name]: v.value }),
-            {}
-          );
-        }
-      }
-      return product.options.reduce(
-        (a, v) => ({ ...a, [v.name]: v.values[0] }),
-        {}
+  const getVariant = useCallback(() => {
+    if (selectedVariant) {
+      const variant = product.variants.find(
+        (variant) => variant.id.split("/ProductVariant/")[1] === selectedVariant
       );
-    }
-  );
 
+      if (!variant) {
+        return product.options.reduce(
+          (a, v) => ({ ...a, [v.name]: v.values[0] }),
+          {}
+        );
+      } else {
+        return variant.selectedOptions.reduce(
+          (a, v) => ({ ...a, [v.name]: v.value }),
+          {}
+        );
+      }
+    }
+    return product.options.reduce(
+      (a, v) => ({ ...a, [v.name]: v.values[0] }),
+      {}
+    );
+  }, [product, selectedVariant]);
+  const [selectedOptions, setSelectedOptions] =
+    useState<SelectedOptions>(getVariant);
+
+  useEffect(() => {
+    setSelectedOptions(getVariant());
+  }, [params, getVariant]);
   const variant = getSelectedVariant(product.variants, selectedOptions);
   const { price } = usePrice({
-    amount: variant.price.amount,
-    currencyCode: variant.price.currencyCode,
+    amount: variant?.price.amount,
+    currencyCode: variant?.price.currencyCode,
   });
 
   return (
@@ -192,7 +194,11 @@ export default function ProductView({
               className="mt-2"
               onSubmit={() => openCart()}
             >
-              <input type="hidden" name="id" value={variant?.id} />
+              <input
+                type="hidden"
+                name="id"
+                value={variant ? variant.id : ""}
+              />
               <input type="number" name="quantity" defaultValue={1} />
 
               <button

@@ -1,4 +1,5 @@
 import { config } from "..";
+import { flattenConnection } from "../lib/utils";
 import { type ProductShort, type ProductResponseShort } from "../types/product";
 
 const getProductsQuery = `
@@ -52,9 +53,9 @@ export default async function getProducts(
   const { data } = await config.fetch<ProductResponseShort>(getProductsQuery, {
     variables: args,
   });
-  const products = data.products.edges.map(({ node }) => ({
-    ...node,
-    images: node.images.edges.map(({ node }) => ({ ...node })),
+  const products = flattenConnection(data.products).map((item) => ({
+    ...item,
+    images: flattenConnection(item.images),
   }));
   return products;
 }

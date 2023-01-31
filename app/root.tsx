@@ -2,7 +2,7 @@ import {
   type MetaFunction,
   type LinksFunction,
   type LoaderArgs,
-  json,
+  defer,
 } from "@remix-run/node";
 import {
   Links,
@@ -29,12 +29,23 @@ export async function loader({ request }: LoaderArgs) {
   const shopInfoPromise = config.operations.getStoreFrontData();
   const cartPromise = config.operations.cart.getCart(request);
   const userPromise = config.operations.auth.getLoggedInUser(request);
-  const [{ shop, collections, menu }, cart, customer] = await Promise.all([
-    shopInfoPromise,
-    cartPromise,
-    userPromise,
-  ]);
-  return json({ shop, collections, menu, cart, customer });
+  const localizationPromise = config.operations.getLocalizations();
+  const [
+    { shop, collections, menu, footerCompany, footerShop, footerSocial },
+    cart,
+    customer,
+  ] = await Promise.all([shopInfoPromise, cartPromise, userPromise]);
+  return defer({
+    shop,
+    collections,
+    menu,
+    footerCompany,
+    footerShop,
+    footerSocial,
+    cart,
+    customer,
+    localizationPromise,
+  });
 }
 
 export default function App() {

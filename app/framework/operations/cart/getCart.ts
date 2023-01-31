@@ -1,5 +1,6 @@
 import { config } from "~/framework";
 import { getSession } from "~/framework/lib/cartSession";
+import { flattenConnection } from "~/framework/lib/utils";
 import type { Cart, CartResponse } from "~/framework/types/cart";
 
 const getCartQuery = `
@@ -15,6 +16,7 @@ const getCartQuery = `
                 currencyCode
               }
             }
+            id
             totalQuantity
             checkoutUrl
             lines(first: 250) {
@@ -24,6 +26,7 @@ const getCartQuery = `
                         id
                         merchandise{
                             ... on ProductVariant {
+                                id
                                 selectedOptions{
                                   name
                                   value
@@ -65,21 +68,25 @@ async function getShopifyCart(cartId: string): Promise<Cart> {
       cartId,
     },
   });
-
-  const formatCart = {
+  const formatCart: Cart = {
     ...cart,
-    lines: cart.lines.edges.map(({ node }) => ({
-      ...node,
-      product: {
-        ...node.merchandise.product,
-        price: node.merchandise.price,
-        images: node.merchandise.product.images.edges.map(({ node }) => ({
-          ...node,
-        })),
-        selectedOptions: node.merchandise.selectedOptions,
-      },
-    })),
+    lines: flattenConnection(cart.lines).map((item) => {
+      const product = {
+        ...item.merchandise.product,
+        variantId: item.merchandise.id,
+        price: item.merchandise.price,
+        images: flattenConnection(item.merchandise.product.images),
+        selectedOptions: item.merchandise.selectedOptions,
+      };
+
+      return {
+        quantity: item.quantity,
+        id: item.id,
+        product,
+      };
+    }),
   };
+
   return formatCart;
 }
 export default async function getCart(request: Request) {

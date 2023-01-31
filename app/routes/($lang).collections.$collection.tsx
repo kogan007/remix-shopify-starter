@@ -25,7 +25,12 @@ export async function loader({ params, request }: LoaderArgs) {
           },
         ]
       : [];
-  const data = await config.operations.getCollection(collectionParam, filter);
+  const country = params.lang;
+  const data = await config.operations.getCollection(
+    collectionParam,
+    filter,
+    country
+  );
   return data;
 }
 

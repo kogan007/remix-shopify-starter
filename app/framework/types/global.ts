@@ -24,15 +24,33 @@ export type StoreFrontData = {
   shop: {
     name: string;
   };
-  menu: {
-    items: {
-      title: string;
-      handle: string;
-    }[];
-  };
+  footerCompany: Menu;
+  footerShop: Menu;
+  footerSocial: Menu;
+  menu: Menu;
 };
 
+export type Menu = {
+  items: {
+    title: string;
+    handle: string;
+  }[];
+};
 export type Price = {
   amount: number;
   currencyCode: string;
+};
+
+export type LocalizationResponse = {
+  localization: {
+    availableCountries: Country[];
+  };
+};
+
+export type Country = {
+  isoCode: string;
+  name: string;
+  currency: {
+    isoCode: string;
+  }[];
 };

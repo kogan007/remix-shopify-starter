@@ -7,7 +7,7 @@ import {
   ShoppingCartIcon,
   UserIcon,
 } from "@heroicons/react/24/outline";
-import { useCart, useCustomer, useMenu } from "~/hooks";
+import { useCart, useCustomer, useLocale, useMenu } from "~/hooks";
 import { Link } from "@remix-run/react";
 import { Sidecart } from "~/components/Cart";
 import { CustomerPopover } from "~/components/Customer";
@@ -20,7 +20,7 @@ export default function Header() {
   const { openCart } = useUI();
   const cart = useCart();
   const customer = useCustomer();
-
+  const locale = useLocale();
   return (
     <header className="relative z-10">
       <nav aria-label="Top">
@@ -230,7 +230,7 @@ export default function Header() {
                       {menu.items.map((item) => (
                         <Link
                           key={item.handle}
-                          to={item.handle}
+                          to={(locale ? `/${locale}` : "") + item.handle}
                           className="flex items-center text-sm font-medium text-gray-700 hover:text-gray-800"
                         >
                           {item.title}

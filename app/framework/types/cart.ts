@@ -5,6 +5,7 @@ export type LineItemResponse = {
   quantity: number;
   id: string;
   merchandise: {
+    id: string;
     selectedOptions: {
       name: string;
       value: string;
@@ -22,6 +23,7 @@ export type LineItemResponse = {
 
 export type CartResponse = {
   cart: {
+    id: string;
     checkoutUrl: string;
     totalQuantity: number;
     lines: Edge<LineItemResponse>;
@@ -38,6 +40,7 @@ export type LineItem = {
     ProductShort,
     "handle" | "id" | "images" | "title" | "vendor"
   > & {
+    variantId: string;
     price: Price;
     selectedOptions: {
       name: string;
@@ -47,6 +50,7 @@ export type LineItem = {
 };
 
 export type Cart = {
+  id: string;
   lines: LineItem[];
   totalQuantity: number;
   checkoutUrl: string;

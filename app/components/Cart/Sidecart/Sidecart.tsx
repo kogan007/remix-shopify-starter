@@ -72,7 +72,7 @@ export default function Sidecart() {
                         </div>
                       </div>
                     </div>
-
+                    <DiscountForm />
                     <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
                       <div className="flex justify-between text-base font-medium text-gray-900">
                         <p>Subtotal</p>
@@ -82,12 +82,12 @@ export default function Sidecart() {
                         Shipping and taxes calculated at checkout.
                       </p>
                       <div className="mt-6">
-                        <a
-                          href={cart?.checkoutUrl}
+                        <Link
+                          to="/checkout"
                           className="flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-indigo-700"
                         >
                           Checkout
-                        </a>
+                        </Link>
                       </div>
                       <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                         <p>
@@ -120,6 +120,10 @@ const Item = ({ item }: { item: Cart["lines"][0] }) => {
     amount: item.product.price.amount,
     currencyCode: item.product.price.currencyCode,
   });
+  const variantId = item.product.variantId.split(
+    "gid://shopify/ProductVariant/"
+  )[1];
+
   return (
     <>
       <div
@@ -129,8 +133,8 @@ const Item = ({ item }: { item: Cart["lines"][0] }) => {
         )}
       >
         <img
-          src={item.product.images[0].url}
-          alt={item.product.images[0].altText}
+          src={item.product.images[0]?.url}
+          alt={item.product.images[0]?.altText}
           className="h-full w-full object-cover object-center"
         />
       </div>
@@ -139,14 +143,27 @@ const Item = ({ item }: { item: Cart["lines"][0] }) => {
         <div>
           <div className="flex justify-between text-base font-medium text-gray-900">
             <h3>
-              <Link to={`/products/` + item.product.handle} prefetch="intent">
+              <Link
+                to={
+                  `/products/` + item.product.handle + `?variant=${variantId}`
+                }
+                prefetch="intent"
+              >
                 {item.product.title}
               </Link>
             </h3>
             <p className="ml-4">{price}</p>
           </div>
         </div>
-        <div className="flex flex-1 items-end justify-between text-sm">
+
+        <div className="mb-1">
+          {item.product.selectedOptions.map((opt) => (
+            <div key={opt.name} className="text-xs">
+              {opt.name}: {opt.value}
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-1 items-center justify-between text-sm">
           <Quantity lineId={item.id} quantity={item.quantity} />
 
           <div className="flex">
@@ -200,3 +217,13 @@ function Quantity({ lineId, quantity }: { lineId: string; quantity: number }) {
     </>
   );
 }
+
+const DiscountForm = () => {
+  const fetcher = useFetcher();
+  return (
+    <fetcher.Form method="post" action="/cart?action=applyDiscount">
+      <input name="code" />
+      <button>Submit</button>
+    </fetcher.Form>
+  );
+};

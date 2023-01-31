@@ -3,7 +3,7 @@ import { useLoaderData } from "@remix-run/react";
 import { config } from "~/framework";
 
 export function loader({ request }: LoaderArgs) {
-  return config.operations.auth.getOrders(request);
+  return config.operations.account.getOrders(request);
 }
 
 export default function Orders() {

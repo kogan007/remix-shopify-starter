@@ -1,5 +1,7 @@
 import { redirect } from "@remix-run/node";
 import { config } from "~/framework";
+import { flattenConnection } from "~/framework/lib/utils";
+import { type Order } from "~/framework/types/account";
 import type { Edge } from "~/framework/types/global";
 
 const orderQuery = `
@@ -12,6 +14,8 @@ const orderQuery = `
             orders(first: 50) {
                 edges {
                     node {
+                        processedAt
+                        id
                         orderNumber
                         fulfillmentStatus
                         name
@@ -28,17 +32,16 @@ const orderQuery = `
 
 type OrderResponse = {
   orders: Edge<
-    Pick<Order, "fulfillmentStatus" | "name" | "orderNumber" | "totalPrice">
+    Pick<
+      Order,
+      | "fulfillmentStatus"
+      | "name"
+      | "orderNumber"
+      | "totalPrice"
+      | "id"
+      | "processedAt"
+    >
   >;
-};
-
-type Order = {
-  orderNumber: number;
-  fulfillmentStatus: string;
-  name: string;
-  totalPrice: {
-    amount: number;
-  };
 };
 
 async function getShopifyOrders(accessToken: string): Promise<Order[]> {
@@ -48,9 +51,7 @@ async function getShopifyOrders(accessToken: string): Promise<Order[]> {
     },
   });
 
-  return data.customer.orders.edges.map(({ node }) => ({
-    ...node,
-  }));
+  return flattenConnection<Order>(data.customer.orders);
 }
 export default async function getOrders(request: Request) {
   const user = await config.operations.auth.getLoggedInUser(request);

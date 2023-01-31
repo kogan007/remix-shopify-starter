@@ -117,7 +117,7 @@ const QuickSearchContent = ({
                   className="flex py-2 px-6 space-x-2 items-center"
                 >
                   <img
-                    src={product.images[0].url}
+                    src={product.images[0]?.url}
                     alt=""
                     width={60}
                     height={60}

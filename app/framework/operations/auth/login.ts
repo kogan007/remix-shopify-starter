@@ -68,5 +68,6 @@ export async function getAccessToken(
 export default async function login(request: Request) {
   return await authenticator.authenticate("shopifyLogin", request, {
     successRedirect: "/",
+    context: { headers: request.headers },
   });
 }

@@ -1,8 +1,11 @@
 import { Form, Link, useSubmit } from "@remix-run/react";
 import type { Collection } from "~/framework/types/collection";
+import { useLocale } from "~/hooks";
 
 export default function CategoryLayout({ data }: { data: Collection }) {
   const submit = useSubmit();
+  const locale = useLocale();
+
   return (
     <div className="mx-auto max-w-2xl px-4 lg:max-w-7xl lg:px-8">
       <div className="border-b border-gray-200 pt-24 pb-10">
@@ -80,7 +83,14 @@ export default function CategoryLayout({ data }: { data: Collection }) {
                 </div>
                 <div className="flex flex-1 flex-col space-y-2 p-4">
                   <h3 className="text-sm font-medium text-gray-900">
-                    <Link to={`/products/` + product.handle} prefetch="intent">
+                    <Link
+                      to={
+                        (locale ? `/${locale}` : "") +
+                        `/products/` +
+                        product.handle
+                      }
+                      prefetch="intent"
+                    >
                       <span aria-hidden="true" className="absolute inset-0" />
                       {product.title}
                     </Link>

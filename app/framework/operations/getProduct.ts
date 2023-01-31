@@ -1,9 +1,15 @@
 import { config } from "..";
+import { flattenConnection } from "../lib/utils";
 import { type Product, type ProductResponseProduct } from "../types/product";
 
 const getProductQuery = `
     query (
         $handle: String!
+        $country: CountryCode
+        $language: LanguageCode
+    ) @inContext (
+      country: $country
+      language: $language
     ) {
         product(handle: $handle) {
             id
@@ -54,16 +60,27 @@ const getProductQuery = `
     }
 `;
 
-export default async function getProduct(handle: string): Promise<Product> {
+export default async function getProduct(
+  handle: string,
+  country: string = "US",
+  language: string = "EN"
+): Promise<Product> {
   try {
     const { data } = await config.fetch<{ product: ProductResponseProduct }>(
       getProductQuery,
-      { variables: { handle } }
+      {
+        variables: {
+          handle,
+          country: country.toUpperCase(),
+          language: language.toUpperCase(),
+        },
+      }
     );
+
     const product = {
       ...data.product,
-      images: data.product.images.edges.map(({ node }) => ({ ...node })),
-      variants: data.product.variants.edges.map(({ node }) => ({ ...node })),
+      images: flattenConnection(data.product.images),
+      variants: flattenConnection(data.product.variants),
     };
     return product;
   } catch (e) {

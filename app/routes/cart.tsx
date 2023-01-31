@@ -9,6 +9,12 @@ export async function action({ request }: ActionArgs) {
   const { searchParams } = new URL(request.url);
   const action = searchParams.get("action");
   switch (action) {
+    case "applyDiscount": {
+      return await config.operations.cart.discountCode(request, "add");
+    }
+    case "removeDiscount": {
+      return await config.operations.cart.discountCode(request, "remove");
+    }
     case "quantity": {
       return await config.operations.cart.quantity(request);
     }
